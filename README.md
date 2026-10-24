@@ -58,6 +58,9 @@ The application stores expense records locally in `ExpensesData.json`. The file 
 - Visualize spending with charts
 - Add budget limits and alerts
 
+## Screenshots
+
+![Personal Expense Tracker running in VS Code](screenshots/expense-tracker.png)
 ---
 
 Built as a learning project while developing my Python programming skills.
