@@ -2,45 +2,55 @@ import json
 import math
 from datetime import datetime
 
+# Terminal Colors
+RESET = "\033[0m"
+RED = "\033[91m"
+GREEN = "\033[92m"
+YELLOW = "\033[93m"
+BLUE = "\033[94m"
+MAGENTA = "\033[95m"
+CYAN = "\033[96m"
+BOLD = "\033[1m"
+
 data_file = "ExpensesData.json"
 def load_expenses():
     try:
         with open(data_file, "r") as file:
             expenses = json.load(file)
             if not isinstance(expenses, list):
-                print("Invalid data type, Starting with an empty list.")
+                print(RED + "Invalid data type, Starting with an empty list." + RESET)
                 return []
 
             required_keys = {"amount", "category", "description", "date"}
 
             for expense in expenses:
                 if not isinstance(expense, dict) or not required_keys.issubset(expense):
-                    print("Invalid expense data, Starting with an empty list.")
+                    print(RED + "Invalid expense data, Starting with an empty list." + RESET)
                     return []
                 if isinstance(expense["amount"],bool) or not isinstance(expense["amount"], (int, float)) or not math.isfinite(expense["amount"]) or expense["amount"]<=0:
-                    print("Invalid amount, Starting with an empty list.")
+                    print(RED + "Invalid amount, Starting with an empty list." + RESET)
                     return[]
                 if not isinstance(expense["category"], str) or not expense["category"].strip():
-                    print("Invalid category, Starting with an empty list.")
+                    print(RED + "Invalid category, Starting with an empty list." + RESET)
                     return[]
                 if not isinstance(expense["description"], str) or not expense["description"].strip():
-                    print("Invalid description, Starting with an empty list.")
+                    print(RED + "Invalid description, Starting with an empty list." + RESET)
                     return[]
                 if not isinstance(expense["date"], str):
-                    print("Invalid date, Starting with an empty list.")
+                    print(RED + "Invalid date, Starting with an empty list." + RESET)
                     return[]
                 try:
                     datetime.strptime(expense["date"], "%d-%m-%y")
                 except (ValueError,TypeError):
-                    print("Invalid date value, Starting with an empty list.")
+                    print(RED + "Invalid date value, Starting with an empty list." + RESET)
                     return[]
-            print("Data Loaded successfully")
+            print(GREEN + "Data Loaded successfully!"+ RESET)
             return expenses
     except FileNotFoundError:
-        print("Data file not found, Creating new data file...")
+        print(RED + "Data file not found, Creating new data file..." + RESET)
         return []
     except json.JSONDecodeError:
-        print("Data file is corrupted. Starting with an empty list.")
+        print(RED + "Data file is corrupted. Starting with an empty list." + RESET)
         return []
 
 expenses = load_expenses()
@@ -48,7 +58,7 @@ expenses = load_expenses()
 def main_menu():
     selection = 0
     while selection != 8:
-        print("Personal Expense Tracker".center(80, "="))
+        print(CYAN + "Personal Expense Tracker".center(80, "=") + RESET)
         print("1. Add Expense")
         print("2. View Expense")
         print("3. Show total Expenses")
@@ -60,11 +70,11 @@ def main_menu():
         print()
         while True:
             try:
-                selection = int(input("Enter your choice :"))
+                selection = int(input(BLUE + "Enter your choice :" + RESET))
                 print()
                 break
             except ValueError:
-                print("Unknown selection, Please try again.")
+                print(YELLOW + "Unknown selection, Please try again." + RESET)
 
         match selection:
             case 1:
@@ -84,7 +94,7 @@ def main_menu():
             case 8:
                 print("Exiting...")
             case _:
-                print("Unknown selection, Please try again.")
+                print(YELLOW + "Unknown selection, Please try again." + RESET)
 
 def save_expenses():
     try:
@@ -92,12 +102,12 @@ def save_expenses():
             json.dump(expenses, file, indent=4)
         return True
     except OSError:
-        print("File error")
+        print(RED + "File error" + RESET)
         return False
 
 def validate_date():
     while True:
-        date = input("Enter Date(DD-MM-YY): ").strip()
+        date = input(BLUE + "Enter Date(DD-MM-YY): " + RESET).strip()
         try:
             if date:
                 datetime.strptime(date, "%d-%m-%y")
@@ -105,30 +115,30 @@ def validate_date():
                 raise ValueError
             break
         except ValueError:
-            print("Invalid date. Please enter a valid date in DD-MM-YY format.")
+            print(YELLOW + "Invalid date. Please enter a valid date in DD-MM-YY format." + RESET)
     return date
 def add_expense():
     # Ask the user for the expense amount
     while True:
         try:
-            exp = float(input("Enter expense amount: "))
+            exp = float(input(BLUE + "Enter expense amount: " + RESET))
             if exp <= 0 or not math.isfinite(exp):
                 raise ValueError
             break
         except ValueError:
-            print("Amount must be greater than zero and non infinite.")
+            print(YELLOW + "Amount must be greater than zero and non infinite." + RESET)
     # Ask the user for the category
     while True:
-        category = input("Enter category: ").capitalize().strip()
+        category = input(BLUE + "Enter category: " + RESET).capitalize().strip()
         if not category:
-            print("Category can't be empty.")
+            print(YELLOW + "Category can't be empty." + RESET)
         else:
             break
     # Ask the user for a short description
     while True:
-        desc = input("Enter description: ").capitalize().strip()
+        desc = input(BLUE + "Enter description: " + RESET).capitalize().strip()
         if not desc:
-            print("Description can't be empty.")
+            print(YELLOW + "Description can't be empty." + RESET)
         else:
             break
     # Ask the user for date
@@ -143,15 +153,17 @@ def add_expense():
     # Add that dictionary to the expenses list
     expenses.append(expense)
     if save_expenses():
-        print("Expense added successfully!")
+        print()
+        print(GREEN + "Expense added successfully!" + RESET)
+        print()
     else:
         expenses.pop()
 def edit_expense():
     if not expenses:
-        print("No expenses recorded.")
+        print(YELLOW + "No expenses recorded." + RESET)
         return
     else:
-        print("All Expenses".center(60,"-"))
+        print(CYAN + "All Expenses".center(60,"-") + RESET)
         
         for index, expense in enumerate(expenses, start=1):
             category = expense["category"]
@@ -163,12 +175,12 @@ def edit_expense():
             print()
         while True:
             try:    
-                edit_index = int(input("Enter the expense number you want to edit: "))
+                edit_index = int(input(BLUE + "Enter the expense number you want to edit: " + RESET))
                 if edit_index <= 0 or edit_index > len(expenses):
                     raise ValueError
                 break
             except ValueError:
-                print("Please enter valid number")
+                print(YELLOW + "Please enter valid number" + RESET)
 
         print("1. amount")
         print("2. category")
@@ -177,14 +189,14 @@ def edit_expense():
         print()
         while True:
             try:
-                selection = int(input("Enter the number of what you want to edit: "))
+                selection = int(input(BLUE + "Enter the number of what you want to edit: " + RESET))
             except ValueError:
-                print("Enter valid number(1-4)")
+                print(YELLOW + "Enter valid number(1-4)" + RESET)
                 continue
             if 0 < selection <=4:
                 break
             else:
-                print("Enter valid number(1-4)")
+                print(YELLOW + "Enter valid number(1-4)" + RESET)
         match selection:
             case 1:
                 copy = expenses[edit_index-1]["amount"]
@@ -196,22 +208,22 @@ def edit_expense():
                         expenses[edit_index-1]["amount"] = amo
                         break
                     except ValueError:
-                        print("Amount must be greater than zero and non infinite.")
+                        print(YELLOW + "Amount must be greater than zero and non infinite." + RESET)
             case 2:
                 copy = expenses[edit_index-1]["category"]
                 while True:
                         new_category = input("Enter new category: ").capitalize().strip()
                         if not new_category:
-                            print("Category can't be empty.")
+                            print(YELLOW + "Category can't be empty." + RESET)
                         else:
                             expenses[edit_index-1]["category"] = new_category
                             break
             case 3:
                 copy = expenses[edit_index-1]["description"]
                 while True:
-                        new_desc = input("Enter new description: ").capitalize().strip()
+                        new_desc = input(BLUE + "Enter new description: " + RESET).capitalize().strip()
                         if not new_desc:
-                            print("Description can't be empty.")
+                            print(YELLOW + "Description can't be empty." + RESET)
                         else:
                             expenses[edit_index-1]["description"] = new_desc
                             break
@@ -219,7 +231,7 @@ def edit_expense():
                 copy = expenses[edit_index-1]["date"] 
                 expenses[edit_index-1]["date"] = validate_date()
     if save_expenses():
-        print("Changes saved successfully!")
+        print(GREEN + "Changes saved successfully!" + RESET)
     else:
         match selection:
             case 1:
@@ -233,10 +245,10 @@ def edit_expense():
 
 def remove_expense():
     if not expenses:
-        print("No expenses recorded.")
+        print(YELLOW + "No expenses recorded." + RESET)
         return
     else:
-        print("All Expenses".center(60,"-"))
+        print(CYAN + "All Expenses".center(60,"-") + RESET)
     
         for index, expense in enumerate(expenses, start=1):
             category = expense["category"]
@@ -249,23 +261,23 @@ def remove_expense():
 
         while True:
             try:
-                remove_index = int(input("Enter the expense number you want to remove: "))
+                remove_index = int(input(BLUE + "Enter the expense number you want to remove: " + RESET))
                 if remove_index <= 0 or remove_index > len(expenses):
                     raise ValueError
                 break
             except ValueError:
-                print("Please enter valid number")
+                print(YELLOW + "Please enter valid number" + RESET)
         copy = expenses[remove_index-1]
         del expenses[remove_index-1]
     if save_expenses():
-        print("Changes saved successfully!")
+        print(GREEN + "Changes saved successfully!" + RESET)
     else:
      expenses.insert(remove_index-1,copy)
 def view_expenses():
     if not expenses:
-        print("No expenses recorded.")
+        print(YELLOW + "No expenses recorded." + RESET)
     else:
-        print("All Expenses".center(60,"-"))
+        print(CYAN + "All Expenses".center(60,"-") + RESET)
 
         for index, expense in enumerate(expenses, start=1):
             category = expense["category"]
@@ -273,16 +285,16 @@ def view_expenses():
             amount = expense["amount"]
             date = expense["date"]
 
-            print(f"{index}. {category} | {desc} | ₹{amount:,.2f} | {date}")
+            print(f"{index}. {category} | {desc} | {MAGENTA}₹{amount:,.2f}{RESET} | {date}")
             print()
             
 def category_summary():
     category_totals = {}
     if not expenses:
-        print("No expenses recorded.")
+        print(YELLOW + "No expenses recorded." + RESET)
         return
     else:
-        print(" Spending by Category ".center(60,"-"))
+        print(CYAN + " Spending by Category ".center(60,"-") + RESET)
         for expense in expenses:
             category = expense["category"]
             amount = expense["amount"]
@@ -291,19 +303,19 @@ def category_summary():
             else:
                 category_totals[category] = amount
         for category, total in category_totals.items():
-            print(f"{category}: ₹{total:,.2f}")
+            print(f"{category}:{MAGENTA} ₹{total:,.2f}" + RESET)
 def monthly_summary():
     monthly_total = 0
     while True:
         try:
-            search_query = input("Enter month and year(MM-YY): ").strip()
+            search_query = input(BLUE + "Enter month and year(MM-YY): " + RESET).strip()
             if search_query:
                 datetime.strptime(search_query, "%m-%y")
                 break
             else:
                 raise ValueError
         except ValueError:
-                print("Invalid month. Please enter MM-YY.")
+                print(YELLOW + "Invalid month. Please enter MM-YY." + RESET)
     month_empty = True
     for expense in expenses:
         date = expense["date"]
@@ -312,19 +324,19 @@ def monthly_summary():
             monthly_total += amount
             month_empty = False
     if month_empty:
-        print("No expenses found for this month.")
+        print(YELLOW + "No expenses found for this month." + RESET)
     else:
-        print(f"Total expenses for {search_query}: ₹{monthly_total:,.2f}")
+        print(f"Total expenses for {search_query}:{MAGENTA} ₹{monthly_total:,.2f}" + RESET)
 
 def total_expenses():
     total_amount = 0
     if not expenses:
-        print("No expenses recorded.")
+        print(YELLOW + "No expenses recorded." + RESET)
     else:
         for expense in expenses:
             amount = expense["amount"]
             total_amount += amount
-        print(f"Total expense: ₹{total_amount:,.2f}")
+        print(f"Total expense:{MAGENTA} ₹{total_amount:,.2f}" + RESET)
         print()
 
 main_menu()
