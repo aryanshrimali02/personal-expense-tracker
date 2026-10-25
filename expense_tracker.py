@@ -58,7 +58,7 @@ expenses = load_expenses()
 def main_menu():
     selection = 0
     while selection != 8:
-        print(CYAN + "Personal Expense Tracker".center(80, "=") + RESET)
+        print(CYAN + BOLD + "Personal Expense Tracker".center(80, "=") + RESET)
         print("1. Add Expense")
         print("2. View Expense")
         print("3. Show total Expenses")
@@ -92,7 +92,7 @@ def main_menu():
             case 7:
                 edit_expense()
             case 8:
-                print("Exiting...")
+                print(GREEN + "Exiting..." + RESET)
             case _:
                 print(YELLOW + "Unknown selection, Please try again." + RESET)
 
@@ -171,7 +171,7 @@ def edit_expense():
             amount = expense["amount"]
             date = expense["date"]
         
-            print(f"{index}. {category} | {desc} | ₹{amount:,.2f} | {date}")
+            print(f"{index}. {category} | {desc} | {MAGENTA}₹{amount:,.2f}{RESET} | {date}")
             print()
         while True:
             try:    
@@ -256,7 +256,7 @@ def remove_expense():
             amount = expense["amount"]
             date = expense["date"]
     
-            print(f"{index}. {category} | {desc} | ₹{amount:,.2f} | {date}")
+            print(f"{index}. {category} | {desc} | {MAGENTA}₹{amount:,.2f}{RESET} | {date}")
             print()
 
         while True:
